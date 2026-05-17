@@ -23,15 +23,15 @@ inductive Kinding : List Kind -> Ty -> Kind -> Prop where
   Kinding Δ B ★ ->
   Kinding Δ (A -:> B) ★
 
-notation:170 Δ:170 " ⊢ " A:170 " : " K:170 => Kinding Δ A K
+notation:170 Δ:170 " ⊢ₖ " A:170 " : " K:170 => Kinding Δ A K
 
 inductive Typing : List Kind -> List Ty -> Term -> Ty -> Prop where
 | var :
   Γ[x]? = some T ->
-  Δ ⊢ T : ★ ->
+  Δ ⊢ₖ T : ★ ->
   Typing Δ Γ #x T
 | lam :
-  Δ ⊢ A : ★ ->
+  Δ ⊢ₖ A : ★ ->
   Typing Δ (A::Γ) t B ->
   Typing Δ Γ (λ[A] t) (A -:> B)
 | app :
@@ -39,13 +39,14 @@ inductive Typing : List Kind -> List Ty -> Term -> Ty -> Prop where
   Typing Δ Γ a A ->
   Typing Δ Γ (f • a) B
 | tlam :
-  Typing (K::Δ) Γ[+1:Ty] t P ->
+  Typing (K::Δ) Γ⟨.add 1⟩ t P ->
   Typing Δ Γ (Λ[K] t) (∀[K] P)
 | tapp :
   Typing Δ Γ f (∀[K] P) ->
-  Δ ⊢ a : K ->
+  Δ ⊢ₖ a : K ->
   P' = P[su a::+0] ->
   Typing Δ Γ (f •[a]) P'
+
 
 notation:170 Δ:170 "&" Γ:170 " ⊢ " t:170 " : " A:170 => Typing Δ Γ t A
 
