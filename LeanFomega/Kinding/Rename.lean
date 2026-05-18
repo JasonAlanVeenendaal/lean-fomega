@@ -17,6 +17,11 @@ theorem KindingRen.succ : X -⟨Ren.add 1⟩> A::X := sorry
 
 theorem KindingRen.comp : A -⟨r1⟩> B -> B -⟨r2⟩> C -> A -⟨r1 ∘ r2⟩> C := sorry
 
-def Kinding.rename (m : Δ1 -⟨r⟩> Δ2) : Δ1 ⊢ₖ A : K -> Δ2 ⊢ₖ A⟨r⟩ : K := sorry
+def Kinding.rename (m : Δ1 -⟨r⟩> Δ2) : Δ1 ⊢ₖ A : K -> Δ2 ⊢ₖ A⟨r⟩ : K
+| var h => var (m.act h)
+| lam j => lam (j.rename $ m.lift _)
+| app j1 j2 => app (j1.rename m) (j2.rename m)
+| all j => all (j.rename $ m.lift _)
+| arrow j1 j2 => arrow (j1.rename m) (j2.rename m)
 
 end LeanFomega

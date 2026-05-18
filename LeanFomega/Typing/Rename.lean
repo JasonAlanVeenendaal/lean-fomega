@@ -1,6 +1,7 @@
 
 import LeanFomega.Typing
 import LeanFomega.Kinding.Rename
+import LeanFomega.Kinding.Substitute
 open LeanSubst
 
 namespace LeanFomega
@@ -21,7 +22,18 @@ theorem TypingRen.comp {A B C : List Ty} : A -⟨r1⟩> B -> B -⟨r2⟩> C -> A
 def Typing.rename_type {Δ1 Δ2 : List Kind} (m : Δ1 -⟨r⟩> Δ2)
   : Δ1&Γ ⊢ t : A -> Δ2&Γ⟨.add 1⟩ ⊢ t : A⟨r⟩ := sorry
 
-def Typing.rename {Γ1 Γ2 : List Ty} (m : Γ1 -⟨r⟩> Γ2)
-  : Δ&Γ1 ⊢ t : A -> Δ&Γ2 ⊢ t⟨r⟩ : A := sorry
+def Typing.rename {Δ1 Δ2 : List Kind} {Γ1 Γ2 : List Ty}
+  (m1 : Δ1 -⟨r1⟩> Δ2) (m2 : Γ1 -⟨r2⟩> Γ2)
+  : Δ1&Γ1 ⊢ t : A -> Δ2&Γ2⟨r1⟩ ⊢ t⟨r2⟩[r1:Ty] : A⟨r1⟩
+| var h j => sorry
+| lam j1 j2 => sorry
+| app j1 j2 => sorry
+| tlam j => sorry
+| tapp (P := P) j1 j2 e =>
+  tapp (P := P⟨r1.lift⟩) (j1.rename m1 m2) (j2.subst m1.to)
+    (by
+      rw [Subst.apply_stable r1.lift r1.to.lift Ren.to_lift]
+      rw [Subst.apply_stable r1 r1.to rfl]
+      simp [e]; sorry)
 
 end LeanFomega
