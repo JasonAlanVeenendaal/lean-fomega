@@ -11,16 +11,36 @@ structure TypingSubst (σ : Subst Term) (Δ : List Kind) (Γ1 Γ2 : List Ty) whe
 
 notation:1000 Δ:1000 " ⊢ₛ " Γ1:1000 " -[" σ "]> " Γ2:1000 => TypingSubst σ Δ Γ1 Γ2
 
+theorem TypingSubst.id : Δ ⊢ₛ X -[+0]> X := sorry
+
 theorem TypingSubst.re (j : Γ2[y]? = some A) (m : Δ ⊢ₛ Γ1 -[σ]> Γ2)
   : Δ ⊢ₛ (A::Γ1) -[re y::σ]> Γ2 := sorry
 
 theorem TypingSubst.su (j : Δ&Γ2 ⊢ a : A) (m : Δ ⊢ₛ Γ1 -[σ]> Γ2)
   : Δ ⊢ₛ (A::Γ1) -[su a::σ]> Γ2 := sorry
 
-theorem Typing.comp : Δ ⊢ₛ A -[σ]> B -> Δ ⊢ₛ B -[τ]> C -> Δ ⊢ₛ A -[σ ∘ τ]> C := sorry
+theorem TypingSubst.lift {Γ1 Γ2 : List Ty} A
+  : Δ ⊢ₛ Γ1 -[σ]> Γ2 -> Δ ⊢ₛ (A::Γ1) -[σ.lift]> (A::Γ2)
+:= sorry
 
-theorem Typing.subst (m : Δ ⊢ₛ Γ1 -[σ]> Γ2) : Δ&Γ1 ⊢ A : K -> Δ&Γ2 ⊢ A[σ] : K := sorry
+theorem TypingSubst.comp : Δ ⊢ₛ A -[σ]> B -> Δ ⊢ₛ B -[τ]> C -> Δ ⊢ₛ A -[σ ∘ τ]> C := sorry
 
-theorem Typing.beta : Δ&(A::Γ) ⊢ b : B -> Δ&Γ ⊢ t : A -> Δ&Γ ⊢ b[su t::+0] : B := sorry
+theorem TypingSubst.hcomp :
+  Δ1 ⊢ₛ A -[σ]> B ->
+  Δ1 -[τ]> Δ2 ->
+  Δ2 ⊢ₛ A[τ:Ty] -[σ ◾ τ]> B[τ:Ty]
+:= sorry
+
+theorem Typing.subst (m : Δ ⊢ₛ Γ1 -[σ]> Γ2) : Δ&Γ1 ⊢ t : A -> Δ&Γ2 ⊢ t[σ] : A
+| var h j => m.act h
+| lam j1 j2 => lam j1 (j2.subst $ m.lift _)
+| app j1 j2 => app (j1.subst m) (j2.subst m)
+| tlam (K := K) j =>
+  have m' : (K::Δ) ⊢ₛ Γ1⟨Ren.add 1⟩ -[σ ◾ +1@Ty]> Γ2⟨Ren.add 1⟩ := sorry
+  tlam (j.subst m')
+| tapp j1 j2 e => tapp (j1.subst m) j2 e
+
+theorem Typing.beta : Δ&(A::Γ) ⊢ b : B -> Δ&Γ ⊢ t : A -> Δ&Γ ⊢ b[su t::+0] : B
+| j1, j2 => j1.subst $ .su j2 .id
 
 end LeanFomega

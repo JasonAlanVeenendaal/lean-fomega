@@ -21,6 +21,8 @@ theorem KindingSubst.lift A :
   A::Δ1 -[σ.lift]> A::Δ2
 := sorry
 
+theorem KindingSubst.succ A : Δ -[+1]> A::Δ := sorry
+
 theorem KindingSubst.comp : A -[σ]> B -> B -[τ]> C -> A -[σ ∘ τ]> C := sorry
 
 theorem KindingRen.to (m : A -⟨r⟩> B) : A -[r.to]> B := sorry

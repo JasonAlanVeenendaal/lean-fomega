@@ -1,5 +1,5 @@
 
-import LeanSubst
+import LeanFomega.Util
 open LeanSubst
 
 namespace LeanFomega
@@ -173,6 +173,38 @@ theorem Term.from_action_su {t} : from_action (su t) = t := by simp [from_action
 
 instance : Coe (Subst.Action Term) Term where
   coe := Term.from_action
+
+@[simp]
+def Term.Ty.rmap (r : HetRen Ty) : Term -> Term
+| #x => #x
+| λ[A] t => λ[A⟨r.forget⟩] rmap r t
+| Λ[K] t => Λ[K] rmap r.lift t
+| app f a => rmap r f • rmap r a
+| f •[a] => rmap r f •[a⟨r.forget⟩]
+
+instance : HetRenMap Term Ty where
+  hrmap := Term.Ty.rmap
+
+@[simp]
+theorem Term.Ty.ren_var {r : HetRen Ty} : (#x)⟨r⟩ = #x := by simp [HetRenMap.hrmap]
+
+@[simp]
+theorem Term.Ty.ren_lam {r : HetRen Ty} {t : Term} : (λ[A] t)⟨r⟩ = λ[A⟨r.forget⟩] t⟨r⟩ := by simp [HetRenMap.hrmap]
+
+@[simp]
+theorem Term.Ty.ren_tlam {r : HetRen Ty} {t : Term} : (Λ[K] t)⟨r⟩ = Λ[K] t⟨r.lift⟩ := by simp [HetRenMap.hrmap]
+
+@[simp]
+theorem Term.Ty.ren_app {r : HetRen Ty} {f a : Term} : (f • a)⟨r⟩ = f⟨r⟩ • a⟨r⟩ := by simp [HetRenMap.hrmap]
+
+@[simp]
+theorem Term.Ty.ren_tapp {r : HetRen Ty} {f : Term} : (f •[a])⟨r⟩ = f⟨r⟩ •[a⟨r.forget⟩] := by simp [HetRenMap.hrmap]
+
+instance : HetRenMapId Term Ty where
+  apply_id := by subst_solve_id
+
+instance : HetRenMapCompose Term Ty where
+  apply_compose := by subst_solve_compose
 
 @[simp]
 def Term.rmap (r : Ren) : Term -> Term

@@ -6,7 +6,7 @@ defaultTargets = ["leanfomega"]
 name = "lean-subst"
 scope = "amarmaduke"
 git = "https://github.com/amarmaduke/lean-subst"
-rev = "5cf3f3ab82b93477975e406ae4523612616cfc5a"
+rev = "705cab3ccd836e96b6051ec4d69f63f25eecac70"
 
 [[lean_lib]]
 name = "LeanFomega"
