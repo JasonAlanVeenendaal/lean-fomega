@@ -85,6 +85,8 @@ structure Kinding.SemSubst (Δ1 Δ2 : List Kind) (σ : Subst Ty) where
 
 notation:35 Γ:35 " -⟦" σ "⟧> " Δ:35 => Kinding.SemSubst Γ Δ σ
 
+theorem Kinding.SemSubst.id : Δ -⟦+0⟧> Δ := sorry
+
 theorem Kinding.SemSubst.lift (m : Γ -⟦σ⟧> Δ) A : A::Γ -⟦σ.lift⟧> A::Δ := SemSubst.mk @λ i _ h =>
   match i with
   | 0 => SnNor.neu (SnNeu.var h)
