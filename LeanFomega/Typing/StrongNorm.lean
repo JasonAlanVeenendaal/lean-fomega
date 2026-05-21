@@ -94,6 +94,8 @@ theorem Typing.SemSubst.hcompose :
   Δ2 ⊢ A⟨r⟩ -⟦σ ◾ @r.to Ty⟧> B⟨r⟩
 := sorry
 
+theorem Typing.SemSubst.su (j : SnNor (𝒱 A) Δ Γ a A) (m : Δ ⊢ Γ1 -⟦σ⟧> Γ2) : Δ ⊢ (A::Γ1) -⟦su a::σ⟧> Γ2 := SemSubst.mk @ λ i _ h => sorry
+
 @[simp]
 def SemanticTyping (Δ : List Kind) (Γ1 : List Ty) (t : Term) (A : Ty) :=
   ∀ {σ Γ2}, Δ ⊢ Γ1 -⟦σ⟧> Γ2 -> Typing.SnNor (𝒱 A) Δ Γ2 t[σ] A
@@ -106,11 +108,17 @@ theorem SemanticTyping.tapp :
   Typing.SnNor V Δ Γ f T ->
   Kinding.SnNor (𝒱ₖ K) Δ a K ->
   Typing.SnNor (𝒱 P[su a::+0]) Δ Γ (f •[a]) P[su a::+0]
-:= sorry
+| eq1, eq2, .tlam h, j2 => sorry
+| eq1, eq2, .neu h, j1 => by subst eq2; apply Typing.SnNor.neu (Typing.SnNeu.tapp h rfl)
+| eq1, eq2, .red h1 h2, j2 => sorry
 
 theorem Typing.fundamental : Δ&Γ ⊢ t : A -> Δ&Γ ⊨ t : A
-| var j1 j2, σ, Γ2, h => sorry
-| lam j1 j2, σ, Γ2, h => sorry
+| var j1 j2, σ, Γ2, h => (h.act j1)
+| lam (B := B) (A := A) (t := t) j1 j2, σ, Γ2, h =>
+  let j2' : Δ&(A::Γ) ⊨ t : B := fundamental j2
+  have lem {Γ2' r'}: Γ2 -⟨r'⟩> Γ2' → 𝒱 (A -:> B) Δ Γ2' (λ[A]t[σ.lift][r'.to.lift]) := λ r a j2 =>
+    j2' (SemSubst.su j2 (SemSubst.compose h r)) |> cast (by simp)
+  SnNor.lam (t := t[σ.lift]) lem (j2' (SemSubst.lift h A))
 | app j1 j2, σ, Γ2, h =>
   let j1' := j1.fundamental h
   sorry
